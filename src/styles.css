@@ -1,0 +1,29 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~ngx-toastr/toastr.css";
+@import "../node_modules/leaflet/dist/leaflet.css";
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+:root {
+  --maincolor: #005291;
+}
+.form-control {
+  border: 2px solid #658ac3;
+  border-radius: 10px;
+  opacity: 1;
+  height: 50px;
+}
+label {
+  color: #0c1435;
+  font-weight: bold;
+}
+span {
+  color: red;
+}
+.cursor_pointer {
+  cursor: pointer;
+}

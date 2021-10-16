@@ -1,0 +1,26 @@
+<div class="login">
+  <div class="wrapper fadeInDown">
+    <h2 class="text-primary">Halan</h2>
+    <div class="formContent">
+      <form [formGroup]="loginForm" (ngSubmit)="onUserLogin()">
+        <input
+          type="text"
+          id="login"
+          class="fadeIn second"
+          name="login"
+          placeholder="login"
+          formControlName="username"
+        />
+        <input
+          type="password"
+          id="password"
+          class="fadeIn third"
+          name="login"
+          placeholder="password"
+          formControlName="password"
+        />
+        <button type="submit" class="btn btn-primary">login</button>
+      </form>
+    </div>
+  </div>
+</div>
