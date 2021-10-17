@@ -12,7 +12,6 @@
       [latitude]="marker.lat"
       [longitude]="marker.lng"
       [markerClickable]="true"
-      (markerClick)="openAreaModal(content)"
     >
     </agm-marker>
   </agm-map>
@@ -27,7 +26,7 @@
 </div>
 <ng-template #content let-c="close" let-d="dismiss">
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Area Infp</h4>
+    <h4 class="modal-title" id="modal-basic-title">Area Info</h4>
     <button
       type="button"
       class="close"
@@ -36,25 +35,31 @@
     ></button>
   </div>
   <div class="modal-body">
-    <form [formGroup]="loginForm" (ngSubmit)="onAddMapInfo()">
+    <form [formGroup]="areaForm" (ngSubmit)="onAddMapInfo()">
       <div class="form-group">
         <label for="area_name">Area Name</label>
         <input
+          [class]="{
+            'is-invalid': areaFormControls.lable.errors
+          }"
           class="form-control"
           type="text"
           formControlName="lable"
-          name=""
           id="area_name"
         />
       </div>
       <div class="form-group">
         <label for="area_color">Area Color</label>
         <input
+          [class]="{
+            'is-invalid': areaFormControls.color.errors
+          }"
           class="form-control"
           type="color"
           formControlName="color"
           name=""
           id="area_color"
+          (change)="updateColor($event)"
         />
       </div>
     </form>
@@ -63,7 +68,7 @@
     <button
       type="button"
       class="btn btn-outline-success"
-      (click)="c('Save click')"
+      (click)="onAddMapInfo()"
     >
       Add
     </button>

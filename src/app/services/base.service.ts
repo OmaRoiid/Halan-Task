@@ -29,14 +29,8 @@ export class BaseService {
           return data.data.length > 0 ? data.data : [];
         }),
         catchError((error) => {
-          if (error.code == 500) {
-            return throwError('server error check your network error');
-          } else if (error.code == 400) {
-            return throwError('bad request error');
-          } else if (error.code == 401) {
-            return throwError('check authientication');
-          } else {
-            return throwError('error happen');
+          if (error.status !== 200) {
+            return throwError(error.error.message);
           }
         })
       );
@@ -49,14 +43,8 @@ export class BaseService {
             return data.data.length > 0 ? data.data : [];
           }),
           catchError((error) => {
-            if (error.code == 500) {
-              return throwError('server error check your network error');
-            } else if (error.code == 400) {
-              return throwError('bad request error');
-            } else if (error.code == 401) {
-              return throwError('check authientication');
-            } else {
-              return throwError('error happen');
+            if (error.status !== 200) {
+              return throwError(error.error.message);
             }
           })
         );
@@ -68,14 +56,8 @@ export class BaseService {
               return data.data.length > 0 ? data.data : [];
             }),
             catchError((error) => {
-              if (error.code == 500) {
-                return throwError('server error check your network error');
-              } else if (error.code == 400) {
-                return throwError('bad request error');
-              } else if (error.code == 401) {
-                return throwError('check authientication');
-              } else {
-                return throwError('error happen');
+              if (error.status !== 200) {
+                return throwError(error.error.message);
               }
             })
           );
@@ -108,12 +90,8 @@ export class BaseService {
   DeleteMethodWithPipe(endPoint: any, params: any): Observable<any> {
     return this.http.delete(this.baseUrl + endPoint + '/' + params).pipe(
       catchError((error) => {
-        if (error.code == 500) {
-          return throwError('server error check your network error');
-        } else if (error.code == 400) {
-          return throwError('bad request');
-        } else {
-          return throwError('error happen');
+        if (error.status !== 200) {
+          return throwError(error.error.message);
         }
       })
     );
@@ -130,24 +108,16 @@ export class BaseService {
     if (!params) {
       return this.http.put(this.baseUrl + endPoint, body).pipe(
         catchError((error) => {
-          if (error.code == 500) {
-            return throwError('server error check your network error');
-          } else if (error.code == 400) {
-            return throwError('bad request');
-          } else {
-            return throwError('error happen');
+          if (error.status !== 200) {
+            return throwError(error.error.message);
           }
         })
       );
     } else {
       return this.http.put(this.baseUrl + endPoint + '/' + params, body).pipe(
         catchError((error) => {
-          if (error.code == 500) {
-            return throwError('server error check your network error');
-          } else if (error.code == 400) {
-            return throwError('bad request');
-          } else {
-            return throwError('error happen');
+          if (error.status !== 200) {
+            return throwError(error.error.message);
           }
         })
       );

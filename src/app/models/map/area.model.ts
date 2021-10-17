@@ -1,7 +1,7 @@
 import { Points } from './points.model';
 
 export interface Area {
-  lable: string;
+  label: string;
   color: string;
   points: Points[];
 }
