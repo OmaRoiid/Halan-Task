@@ -8,12 +8,14 @@ import { MapRoutingModule } from './map-routing.module';
 import { MapComponent } from './map.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AgmCoreModule } from '@agm/core';
+import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [MapComponent],
   imports: [
     CommonModule,
     MapRoutingModule,
+    NgbNavModule,
     FormsModule,
     ReactiveFormsModule,
     AgmCoreModule.forRoot({

@@ -1,7 +1,10 @@
 import { Points } from './points.model';
 
 export interface Area {
-  label: string;
   color: string;
-  points: Points[];
+  label: string;
+  points: any[];
+  user?: string;
+  __v?: 0;
+  _id?: string;
 }

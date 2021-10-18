@@ -1,21 +1,12 @@
-import { map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { Area } from './../models/map/area.model';
-import { element } from 'protractor';
 import { BaseService } from './../services/base.service';
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import {
-  AbstractControl,
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Points } from '../models/map/points.model';
+import { LatLngLiteral } from '@agm/core';
 import { BaseAPI } from '../models/BaseApi.model';
-import { LatLng, LatLngLiteral } from '@agm/core';
 declare const google: any;
 
 @Component({
@@ -24,6 +15,9 @@ declare const google: any;
   styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements OnInit {
+  isUpdate = false;
+  isDeleted = false;
+  selectedItem;
   polygons: Area[] = [];
   lat = 29.8454;
   lng = 31.337151;
@@ -58,21 +52,7 @@ export class MapComponent implements OnInit {
         this.toastrService.error(err, 'Erorr');
       },
       () => {
-        this.polygons.map((area) => {
-          const latlngArr = [];
-          area.points = area.points.map((path: any) => {
-            latlngArr.push(
-              new Array<Array<LatLng | LatLngLiteral>>(path.lat, path.lng).map(
-                (i) => Number(i)
-              )
-            );
-            return [
-              latlngArr.map((point) => {
-                return { lat: point[0], lng: point[1] };
-              }),
-            ];
-          });
-        });
+        this.mapingAreaPointsToGoogleLatLngArray();
       }
     );
   }
@@ -82,7 +62,18 @@ export class MapComponent implements OnInit {
   get areaFormControls() {
     return this.areaForm.controls;
   }
-
+  mapingAreaPointsToGoogleLatLngArray(): void {
+    this.polygons.map((area) => {
+      const latlngArr: LatLngLiteral[] = [];
+      area.points.forEach((path: any) => {
+        latlngArr.push({
+          lat: +path.lat,
+          lng: +path.lng,
+        });
+      });
+      area.points = [latlngArr];
+    });
+  }
   // this Method is responsing to add the  drawing tools on google map.
   initDrawingManager(map: any): void {
     const options = {
@@ -123,10 +114,8 @@ export class MapComponent implements OnInit {
           this.updatePointList(event.overlay.getPath());
           this.openAreaModal(this.content);
         }
-        if (event.type !== google.maps.drawing.OverlayType.MARKER) {
-          // Switch back to non-drawing mode after drawing a shape.
+        if (event.type !== google.maps.drawing.OverlayType.POLYGON) {
           this.drawingManager.setDrawingMode(null);
-          // To hide:
           this.drawingManager.setOptions({
             drawingControl: false,
           });
@@ -136,16 +125,22 @@ export class MapComponent implements OnInit {
   }
 
   deleteSelectedShape(): void {
-    if (this.selectedShape) {
-      this.selectedShape.setMap(null);
-      this.selectedArea = 0;
-      this.pointList.splice(0, this.pointList.length);
-      this.drawingManager.setOptions({
-        drawingControl: true,
-      });
-    }
+    this.baseService
+      .DeleteMethodWithPipe('zones', this.selectedItem._id)
+      .subscribe(
+        (responseData: BaseAPI) => {
+          this.toastrService.success(responseData.message);
+        },
+        (err) => {
+          this.toastrService.error(err, 'Erorr');
+        },
+        () => {
+          this.modalService.dismissAll();
+          this.getAreas();
+        }
+      );
   }
-
+  //Add the lines on map to draw it before submit
   updatePointList(path): void {
     this.pointList = [];
     const len = path.getLength();
@@ -175,7 +170,12 @@ export class MapComponent implements OnInit {
       },
       () => {
         this.modalService.dismissAll();
+        this.getAreas();
       }
     );
+  }
+  onPolyClick(content, area) {
+    this.selectedItem = area;
+    this.modalService.open(content);
   }
 }
