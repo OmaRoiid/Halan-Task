@@ -14,15 +14,18 @@
       [markerClickable]="true"
     >
     </agm-marker>
+    <div *ngFor="let areas of polygons">
+      <agm-polygon
+        [paths]="path"
+        [fillColor]="areas.color"
+        fillOpacity=".35"
+        [strokeColor]="areas.color"
+        ()
+        *ngFor="let path of areas.points"
+      >
+      </agm-polygon>
+    </div>
   </agm-map>
-  <!-- <div *ngIf="pointList.length > 0" class="display-flex">
-    <button class="btn btn-primary" (click)="deleteSelectedShape()">
-      Clear
-    </button>
-  </div>
-  <div class="card" *ngIf="selectedArea > 0">
-    <span> Selected Area: {{ selectedArea.toPrecision(5) }}m<sup>2</sup> </span>
-  </div> -->
 </div>
 <ng-template #content let-c="close" let-d="dismiss">
   <div class="modal-header">

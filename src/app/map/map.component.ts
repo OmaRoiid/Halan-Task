@@ -1,3 +1,4 @@
+import { map } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { Area } from './../models/map/area.model';
 import { element } from 'protractor';
@@ -14,6 +15,7 @@ import {
 import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Points } from '../models/map/points.model';
 import { BaseAPI } from '../models/BaseApi.model';
+import { LatLng, LatLngLiteral } from '@agm/core';
 declare const google: any;
 
 @Component({
@@ -47,14 +49,30 @@ export class MapComponent implements OnInit {
   ngOnInit(): void {
     this.getAreas();
   }
-
   getAreas(): void {
     this.baseService.GetMethodWithPipe('zones').subscribe(
-      (responseData: BaseAPI) => {
-        this.polygons = responseData.data;
+      (responseData: Area[]) => {
+        this.polygons = responseData;
       },
       (err) => {
         this.toastrService.error(err, 'Erorr');
+      },
+      () => {
+        this.polygons.map((area) => {
+          const latlngArr = [];
+          area.points = area.points.map((path: any) => {
+            latlngArr.push(
+              new Array<Array<LatLng | LatLngLiteral>>(path.lat, path.lng).map(
+                (i) => Number(i)
+              )
+            );
+            return [
+              latlngArr.map((point) => {
+                return { lat: point[0], lng: point[1] };
+              }),
+            ];
+          });
+        });
       }
     );
   }
@@ -122,7 +140,6 @@ export class MapComponent implements OnInit {
       this.selectedShape.setMap(null);
       this.selectedArea = 0;
       this.pointList.splice(0, this.pointList.length);
-      // To show:
       this.drawingManager.setOptions({
         drawingControl: true,
       });
