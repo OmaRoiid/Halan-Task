@@ -19,8 +19,6 @@ export class MapComponent implements OnInit {
   isDeleted = false;
   selectedItem;
   polygons: Area[] = [];
-  lat = 29.8454;
-  lng = 31.337151;
   pointList: Points[];
   areaForm = new FormGroup({
     lable: new FormControl('', [Validators.required]),
@@ -43,37 +41,14 @@ export class MapComponent implements OnInit {
   ngOnInit(): void {
     this.getAreas();
   }
-  getAreas(): void {
-    this.baseService.GetMethodWithPipe('zones').subscribe(
-      (responseData: Area[]) => {
-        this.polygons = responseData;
-      },
-      (err) => {
-        this.toastrService.error(err, 'Erorr');
-      },
-      () => {
-        this.mapingAreaPointsToGoogleLatLngArray();
-      }
-    );
-  }
+
   onMapReady(map): void {
     this.initDrawingManager(map);
   }
   get areaFormControls() {
     return this.areaForm.controls;
   }
-  mapingAreaPointsToGoogleLatLngArray(): void {
-    this.polygons.map((area) => {
-      const latlngArr: LatLngLiteral[] = [];
-      area.points.forEach((path: any) => {
-        latlngArr.push({
-          lat: +path.lat,
-          lng: +path.lng,
-        });
-      });
-      area.points = [latlngArr];
-    });
-  }
+
   // this Method is responsing to add the  drawing tools on google map.
   initDrawingManager(map: any): void {
     const options = {
@@ -89,7 +64,6 @@ export class MapComponent implements OnInit {
     };
     this.drawingManager = new google.maps.drawing.DrawingManager(options);
     this.drawingManager.setMap(map);
-
     google.maps.event.addListener(
       this.drawingManager,
       'overlaycomplete',
@@ -123,24 +97,7 @@ export class MapComponent implements OnInit {
       }
     );
   }
-
-  deleteSelectedShape(): void {
-    this.baseService
-      .DeleteMethodWithPipe('zones', this.selectedItem._id)
-      .subscribe(
-        (responseData: BaseAPI) => {
-          this.toastrService.success(responseData.message);
-        },
-        (err) => {
-          this.toastrService.error(err, 'Erorr');
-        },
-        () => {
-          this.modalService.dismissAll();
-          this.getAreas();
-        }
-      );
-  }
-  //Add the lines on map to draw it before submit
+  // Add the lines on map to draw it before submit
   updatePointList(path): void {
     this.pointList = [];
     const len = path.getLength();
@@ -154,6 +111,39 @@ export class MapComponent implements OnInit {
   }
   updateColor(event): void {
     this.areaFormControls.color.setValue(event.target.value);
+  }
+  onPolyClick(content, area): void {
+    this.selectedItem = area;
+    this.areaFormControls.lable.patchValue(this.selectedItem.label);
+    this.areaFormControls.color.patchValue(this.selectedItem.color);
+    this.pointList = this.selectedItem.points;
+    this.modalService.open(content);
+  }
+  // Zones API Methods
+  getAreas(): void {
+    this.baseService.GetMethodWithPipe('zones').subscribe(
+      (responseData: Area[]) => {
+        this.polygons = responseData;
+      },
+      (err) => {
+        this.toastrService.error(err, 'Erorr');
+      },
+      () => {
+        this.mapingAreaPointsToGoogleLatLngArray();
+      }
+    );
+  }
+  mapingAreaPointsToGoogleLatLngArray(): void {
+    this.polygons.map((area) => {
+      const latlngArr: LatLngLiteral[] = [];
+      area.points.forEach((path: any) => {
+        latlngArr.push({
+          lat: +path.lat,
+          lng: +path.lng,
+        });
+      });
+      area.points = [latlngArr];
+    });
   }
   onAddMapInfo(): void {
     const area: Area = {
@@ -174,8 +164,42 @@ export class MapComponent implements OnInit {
       }
     );
   }
-  onPolyClick(content, area) {
-    this.selectedItem = area;
-    this.modalService.open(content);
+  deleteSelectedArea(): void {
+    this.baseService
+      .DeleteMethodWithPipe('zones', this.selectedItem._id)
+      .subscribe(
+        (responseData: BaseAPI) => {
+          this.toastrService.success(responseData.message);
+        },
+        (err) => {
+          this.toastrService.error(err, 'Erorr');
+        },
+        () => {
+          this.modalService.dismissAll();
+          this.getAreas();
+        }
+      );
+  }
+
+  onUpdateArea(): void {
+    const updatedArea = {
+      label: this.areaFormControls.lable.value,
+      color: this.areaFormControls.color.value,
+      points: this.pointList,
+    };
+    this.baseService
+      .UpdateMethodWithPipe('zones', this.selectedItem._id, updatedArea)
+      .subscribe(
+        (responseData: BaseAPI) => {
+          this.toastrService.success(responseData.message);
+        },
+        (err) => {
+          this.toastrService.error(err, 'Erorr');
+        },
+        () => {
+          this.modalService.dismissAll();
+          this.getAreas();
+        }
+      );
   }
 }

@@ -1,12 +1,12 @@
 <div class="container">
   <h1>Area Selecting</h1>
   <i class="fas fa-arrow-circle-down text-primary">
-    Map Control:for start and stop drawing
+    <strong>Map Control</strong> start and stop drawing
   </i>
   <agm-map
     [zoom]="8"
-    [latitude]="lat"
-    [longitude]="lng"
+    [latitude]="29.8454"
+    [longitude]="31.337151"
     (mapReady)="onMapReady($event)"
   >
     <agm-marker
@@ -90,12 +90,12 @@
       <li ngbNavItem class="col-6">
         <a ngbNavLink class="btn btn-primary">Update</a>
         <ng-template ngbNavContent class="mt-3">
-          <form [formGroup]="areaForm" (ngSubmit)="onAddMapInfo()">
+          <form [formGroup]="areaForm" (ngSubmit)="onUpdateArea()">
             <div class="form-group">
               <label for="area_name">Area Name</label>
               <input
                 [class]="{
-                  'is-invalid': areaFormControls.lable.errors
+                  'is-invalid': areaFormControls.lable.touched
                 }"
                 class="form-control"
                 type="text"
@@ -120,7 +120,7 @@
             <button
               type="button"
               class="btn btn-outline-success"
-              (click)="onAddMapInfo()"
+              (click)="onUpdateArea()"
             >
               Update
             </button>
@@ -132,7 +132,7 @@
         <ng-template ngbNavContent class="mt-3">
           <div>
             <h2 class="text-danger strong">Are You Sure !!</h2>
-            <button class="mt-2 btn btn-danger" (click)="deleteSelectedShape()">
+            <button class="mt-2 btn btn-danger" (click)="deleteSelectedArea()">
               Delete
             </button>
           </div></ng-template
