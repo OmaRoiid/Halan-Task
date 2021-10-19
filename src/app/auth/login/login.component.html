@@ -1,26 +1,29 @@
 <div class="login">
-  <div class="wrapper fadeInDown">
+  <div class="wrapper">
     <h2 class="text-primary">Halan</h2>
     <div class="formContent">
       <form [formGroup]="loginForm" (ngSubmit)="onUserLogin()">
         <input
           type="text"
           id="login"
-          class="fadeIn second"
-          name="login"
-          placeholder="login"
+          placeholder="Username"
           formControlName="username"
         />
-        <input
-          type="password"
-          id="password"
-          class="fadeIn third"
-          name="login"
-          placeholder="password"
-          formControlName="password"
-        />
+        <div class="position-relative">
+          <input
+            type="password"
+            id="password"
+            [type]="hide ? 'password' : 'text'"
+            formControlName="password"
+          />
+          <i
+            (click)="hide = !hide"
+            class="fas fa-eye input__icon"
+            id="togglePassword"
+          ></i>
+        </div>
         <button type="submit" class="btn btn-primary" *ngIf="!isLoading">
-          login
+          Login
         </button>
         <div class="w-100 text-center" *ngIf="isLoading">
           <div class="spinner-border text-primary" role="status"></div>

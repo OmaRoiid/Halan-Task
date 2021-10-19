@@ -14,6 +14,7 @@ import { environment } from 'src/environments/environment';
 })
 export class LoginComponent implements OnInit {
   isLoading = false;
+  hide: boolean;
   loginForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
@@ -30,20 +31,18 @@ export class LoginComponent implements OnInit {
       return;
     }
     this.isLoading = true;
-    this.baseService
-      .PostMethodWithPipe('login', this.loginForm.value)
-      .subscribe(
-        (responseData: LoginResponse) => {
-          this.toastrService.success('Login', responseData.message);
-          localStorage.setItem('userLogin', responseData.token);
-        },
-        (err) => {
-          this.toastrService.error(err, 'Login');
-          this.isLoading = false;
-        },
-        () => {
-          this.router.navigate(['/map']);
-        }
-      );
+    this.baseService.PostApiMethod('login', this.loginForm.value).subscribe(
+      (responseData: LoginResponse) => {
+        this.toastrService.success('Login', responseData.message);
+        localStorage.setItem('userLogin', responseData.token);
+      },
+      (err) => {
+        this.toastrService.error(err, 'Login');
+        this.isLoading = false;
+      },
+      () => {
+        this.router.navigate(['/map']);
+      }
+    );
   }
 }

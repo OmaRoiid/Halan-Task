@@ -125,12 +125,17 @@ export class MapComponent implements OnInit {
   }
   // Zones API Methods:
   getAreas(): void {
-    this.baseService.GetMethodWithPipe('zones').subscribe(
+    this.baseService.GetApiMethod('zones').subscribe(
       (responseData: Area[]) => {
         this.polygons = responseData;
       },
       (err) => {
-        this.toastrService.error(err, 'Erorr');
+        // recall the method of getAreas() if timeout error happens
+        if (err.status == 408) {
+          this.getAreas();
+        } else {
+          this.toastrService.error(err.statusText, 'Erorr');
+        }
       },
       () => {
         this.mapingAreaPointsToGoogleLatLngArray();
@@ -157,7 +162,7 @@ export class MapComponent implements OnInit {
       color: this.areaFormControls.color.value,
       points: this.pointList,
     };
-    this.baseService.PostMethodWithPipe('zones', area).subscribe(
+    this.baseService.PostApiMethod('zones', area).subscribe(
       (responseData) => {
         this.toastrService.success(responseData.message);
       },
@@ -170,20 +175,18 @@ export class MapComponent implements OnInit {
     );
   }
   deleteSelectedArea(): void {
-    this.baseService
-      .DeleteMethodWithPipe('zones', this.selectedItem._id)
-      .subscribe(
-        (responseData: BaseAPI) => {
-          this.toastrService.success(responseData.message);
-        },
-        (err) => {
-          this.toastrService.error(err, 'Erorr');
-        },
-        () => {
-          this.modalService.dismissAll();
-          this.getAreas();
-        }
-      );
+    this.baseService.DeleteApiMethod('zones', this.selectedItem._id).subscribe(
+      (responseData: BaseAPI) => {
+        this.toastrService.success(responseData.message);
+      },
+      (err) => {
+        this.toastrService.error(err, 'Erorr');
+      },
+      () => {
+        this.modalService.dismissAll();
+        this.getAreas();
+      }
+    );
   }
 
   onUpdateArea(): void {
@@ -193,7 +196,7 @@ export class MapComponent implements OnInit {
       points: this.pointList,
     };
     this.baseService
-      .UpdateMethodWithPipe('zones', this.selectedItem._id, updatedArea)
+      .UpdateApiMethod('zones', this.selectedItem._id, updatedArea)
       .subscribe(
         (responseData: BaseAPI) => {
           this.toastrService.success(responseData.message);

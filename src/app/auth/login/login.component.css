@@ -45,7 +45,13 @@ input:hover {
   background-color: #358fd4;
   color: #fff;
 }
-
+.input__icon {
+  position: absolute;
+  top: 26px;
+  font-size: 20px;
+  z-index: 1;
+  right: 40px;
+}
 input[type="text"],
 input[type="password"] {
   background-color: #f6f6f6;

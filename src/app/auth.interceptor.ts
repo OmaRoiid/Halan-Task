@@ -20,7 +20,6 @@ export class AuthInterceptor implements HttpInterceptor {
         Authorization: `Bearer ${localStorage.getItem('userLogin')}`,
       },
     });
-
     return next.handle(request);
   }
 }

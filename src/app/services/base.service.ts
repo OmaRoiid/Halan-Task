@@ -18,7 +18,7 @@ export class BaseService {
    * 1- end point name for the called api
    * 2- pramas parameter which is will be optional parameter
    */
-  GetMethodWithPipe(
+  GetApiMethod(
     endPoint: string,
     params?: any,
     queryPrams?: any
@@ -30,7 +30,7 @@ export class BaseService {
         }),
         catchError((error) => {
           if (error.status !== 200) {
-            return throwError(error.error.message);
+            return throwError(error);
           }
         })
       );
@@ -71,7 +71,7 @@ export class BaseService {
    * 1- endPoint : end point name for the called api
    * 2- body :  parameter which is the designed model to affect row in the database
    */
-  PostMethodWithPipe(endPoint: string, body: any): Observable<any> {
+  PostApiMethod(endPoint: string, body: any): Observable<any> {
     return this.http.post(this.baseUrl + endPoint, body).pipe(
       catchError((error) => {
         if (error.status !== 200) {
@@ -87,7 +87,7 @@ export class BaseService {
    * 1- endPoint : end point name for the called api
    * 2- params :  parameter which is will be needed to select the needed id of the selected row needed for delete
    */
-  DeleteMethodWithPipe(endPoint: any, params: any): Observable<any> {
+  DeleteApiMethod(endPoint: any, params: any): Observable<any> {
     return this.http.delete(this.baseUrl + endPoint + '/' + params).pipe(
       catchError((error) => {
         if (error.status !== 200) {
@@ -104,7 +104,7 @@ export class BaseService {
    * 2- params :  parameter which is will be needed to select the needed id of the selected row needed for delete
    * 3- body : parameter needed to show the affected values to be updated in the database
    */
-  UpdateMethodWithPipe(endPoint: any, params: any, body: any): Observable<any> {
+  UpdateApiMethod(endPoint: any, params: any, body: any): Observable<any> {
     if (!params) {
       return this.http.put(this.baseUrl + endPoint, body).pipe(
         catchError((error) => {
