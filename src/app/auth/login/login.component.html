@@ -19,7 +19,12 @@
           placeholder="password"
           formControlName="password"
         />
-        <button type="submit" class="btn btn-primary">login</button>
+        <button type="submit" class="btn btn-primary" *ngIf="!isLoading">
+          login
+        </button>
+        <div class="w-100 text-center" *ngIf="isLoading">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
       </form>
     </div>
   </div>

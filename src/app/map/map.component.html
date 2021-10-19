@@ -31,15 +31,21 @@
     </div>
   </agm-map>
 </div>
+<div class="w-100 text-center my-3">
+  <a
+    *ngIf="polygons.length > 0"
+    class="btn btn-dark"
+    (click)="generateDownloadJsonUri()"
+    title="Download Zones"
+    [href]="downloadJsonHref"
+    download="Zones.json"
+    >Download Zones</a
+  >
+</div>
 <ng-template #content let-c="close" let-d="dismiss">
   <div class="modal-header">
     <h4 class="modal-title" id="modal-basic-title">Area Info</h4>
-    <button
-      type="button"
-      class="close"
-      aria-label="Close"
-      (click)="d('Cross click')"
-    ></button>
+    <button type="button" class="close" aria-label="Close"></button>
   </div>
   <div class="modal-body">
     <form [formGroup]="areaForm" (ngSubmit)="onAddMapInfo()">

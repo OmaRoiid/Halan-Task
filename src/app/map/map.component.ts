@@ -7,6 +7,7 @@ import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
 import { Points } from '../models/map/points.model';
 import { LatLngLiteral } from '@agm/core';
 import { BaseAPI } from '../models/BaseApi.model';
+import { DomSanitizer } from '@angular/platform-browser';
 declare const google: any;
 
 @Component({
@@ -15,6 +16,7 @@ declare const google: any;
   styleUrls: ['./map.component.css'],
 })
 export class MapComponent implements OnInit {
+  downloadJsonHref;
   isUpdate = false;
   isDeleted = false;
   selectedItem;
@@ -32,7 +34,8 @@ export class MapComponent implements OnInit {
     config: NgbModalConfig,
     private modalService: NgbModal,
     private baseService: BaseService,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private sanitizer: DomSanitizer
   ) {
     config.backdrop = 'static';
     config.keyboard = false;
@@ -97,6 +100,7 @@ export class MapComponent implements OnInit {
       }
     );
   }
+  // Map Methods:
   // Add the lines on map to draw it before submit
   updatePointList(path): void {
     this.pointList = [];
@@ -119,7 +123,7 @@ export class MapComponent implements OnInit {
     this.pointList = this.selectedItem.points;
     this.modalService.open(content);
   }
-  // Zones API Methods
+  // Zones API Methods:
   getAreas(): void {
     this.baseService.GetMethodWithPipe('zones').subscribe(
       (responseData: Area[]) => {
@@ -136,13 +140,15 @@ export class MapComponent implements OnInit {
   mapingAreaPointsToGoogleLatLngArray(): void {
     this.polygons.map((area) => {
       const latlngArr: LatLngLiteral[] = [];
-      area.points.forEach((path: any) => {
-        latlngArr.push({
-          lat: +path.lat,
-          lng: +path.lng,
+      if (area.points !== null) {
+        area.points.forEach((path: any) => {
+          latlngArr.push({
+            lat: +path.lat,
+            lng: +path.lng,
+          });
         });
-      });
-      area.points = [latlngArr];
+        area.points = [latlngArr];
+      }
     });
   }
   onAddMapInfo(): void {
@@ -159,8 +165,7 @@ export class MapComponent implements OnInit {
         this.toastrService.error(err, 'Error');
       },
       () => {
-        this.modalService.dismissAll();
-        this.getAreas();
+        location.reload();
       }
     );
   }
@@ -201,5 +206,13 @@ export class MapComponent implements OnInit {
           this.getAreas();
         }
       );
+  }
+  // DownLoad File Method
+  generateDownloadJsonUri(): void {
+    const parsedPolygons = JSON.stringify(this.polygons);
+    const uri = this.sanitizer.bypassSecurityTrustUrl(
+      'data:text/json;charset=UTF-8,' + encodeURIComponent(parsedPolygons)
+    );
+    this.downloadJsonHref = uri;
   }
 }

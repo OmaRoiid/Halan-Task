@@ -1,5 +1,5 @@
-import { LoginResponse } from './../models/login/userlogin-response.model';
-import { BaseService } from './../services/base.service';
+import { LoginResponse } from '../../models/login/userlogin-response.model';
+import { BaseService } from '../../services/base.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { HttpClient } from '@angular/common/http';
@@ -13,13 +13,12 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
+  isLoading = false;
   loginForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
   });
-
   constructor(
-    private httpClient: HttpClient,
     private toastrService: ToastrService,
     private router: Router,
     private baseService: BaseService
@@ -30,6 +29,7 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.invalid) {
       return;
     }
+    this.isLoading = true;
     this.baseService
       .PostMethodWithPipe('login', this.loginForm.value)
       .subscribe(
@@ -39,6 +39,7 @@ export class LoginComponent implements OnInit {
         },
         (err) => {
           this.toastrService.error(err, 'Login');
+          this.isLoading = false;
         },
         () => {
           this.router.navigate(['/map']);

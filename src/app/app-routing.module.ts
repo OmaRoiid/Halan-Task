@@ -1,4 +1,4 @@
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './auth/login/login.component';
 import { NgModule, Component } from '@angular/core';
 import { RouterModule, Routes, CanActivate } from '@angular/router';
 import { AuthGuard } from './auth.guard';
@@ -8,6 +8,8 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+    loadChildren: () =>
+      import('./auth/auth.module').then((auth) => auth.AuthModule),
   },
   {
     path: 'map',
